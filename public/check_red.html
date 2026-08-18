@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html><body>
+<script>
+  const images = [
+    '688356759_1728478181656357_3392084299283319230_n.jpg',
+    '755941615_1247732784062554_5340746620494007861_n.jpg',
+    '758350034_27664731326529967_2887842006468609395_n.jpg',
+    '761113080_1023506027328100_2093982855570264772_n.jpg',
+    '763398285_1001018992982573_4720073835676992398_n.jpg',
+    '763663366_4026838244115563_7448027683420837392_n.jpg',
+    '763692220_3582423251904649_4737351665887322127_n.jpg',
+    '766193506_1938749603458712_8769771622467127035_n.jpg',
+    '766319926_1617139786596013_6803408660997148690_n.jpg',
+    '766344900_4469660169990307_6101832594510816811_n.jpg'
+  ];
+  
+  async function check() {
+    for (let src of images) {
+      let img = new Image();
+      img.src = '/images/products/' + src;
+      await new Promise(r => img.onload = r);
+      let c = document.createElement('canvas');
+      c.width = img.width; c.height = img.height;
+      let ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      let d = ctx.getImageData(0, 0, c.width, c.height).data;
+      let redCount = 0;
+      for (let i=0; i<d.length; i+=4) {
+        if (d[i] > 150 && d[i+1] < 100 && d[i+2] < 100) redCount++;
+      }
+      console.log(src + ': ' + redCount + ' pure red pixels');
+      
+      // send result to server
+      fetch('/api/log?msg=' + src + ':' + redCount);
+    }
+  }
+  check();
+</script>
+</body></html>

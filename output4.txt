@@ -1,0 +1,69 @@
+No DATABASE_URL found. Falling back to local PGlite (in-memory/file).
+Migration failed error: inconsistent types deduced for parameter $1
+    at pe.Ue (/app/applet/node_modules/@electric-sql/pg-protocol/src/parser.ts:442:11)
+    at pe.tt (/app/applet/node_modules/@electric-sql/pg-protocol/src/parser.ts:220:16)
+    at pe.parse (/app/applet/node_modules/@electric-sql/pg-protocol/src/parser.ts:104:21)
+    at O.qe (/app/applet/node_modules/@electric-sql/pglite/dist/index.js:5:1762)
+    at <anonymous> (/app/applet/node_modules/@electric-sql/pglite/dist/index.js:5:1155)
+    at wasm://wasm/0267b22e:wasm-function[10926]:0x5a5a7a
+    at wasm://wasm/0267b22e:wasm-function[3584]:0x27ea68
+    at wasm://wasm/0267b22e:wasm-function[3626]:0x28694e
+    at wasm://wasm/0267b22e:wasm-function[3636]:0x286baa
+    at wasm://wasm/0267b22e:wasm-function[9913]:0x54fcc7 {
+  length: 154,
+  severity: 'ERROR',
+  code: '42P08',
+  detail: 'text versus character varying',
+  hint: undefined,
+  position: '94',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_param.c',
+  line: '227',
+  routine: 'variable_coerce_param_hook',
+  query: 'INSERT INTO product_images (product_id, image_url, sort_order, is_primary)\n' +
+    '           SELECT $1, $2, $3, $4\n' +
+    '           WHERE NOT EXISTS (SELECT 1 FROM product_images WHERE product_id = $1 AND is_primary = true)',
+  params: [ 'p1', '/images/products/blessed_model.jpg', 0, true ],
+  queryOptions: undefined
+}
+error: inconsistent types deduced for parameter $1
+    at pe.Ue (/app/applet/node_modules/@electric-sql/pg-protocol/src/parser.ts:442:11)
+    at pe.tt (/app/applet/node_modules/@electric-sql/pg-protocol/src/parser.ts:220:16)
+    at pe.parse (/app/applet/node_modules/@electric-sql/pg-protocol/src/parser.ts:104:21)
+    at O.qe (/app/applet/node_modules/@electric-sql/pglite/dist/index.js:5:1762)
+    at <anonymous> (/app/applet/node_modules/@electric-sql/pglite/dist/index.js:5:1155)
+    at wasm://wasm/0267b22e:wasm-function[10926]:0x5a5a7a
+    at wasm://wasm/0267b22e:wasm-function[3584]:0x27ea68
+    at wasm://wasm/0267b22e:wasm-function[3626]:0x28694e
+    at wasm://wasm/0267b22e:wasm-function[3636]:0x286baa
+    at wasm://wasm/0267b22e:wasm-function[9913]:0x54fcc7 {
+  length: 154,
+  severity: 'ERROR',
+  code: '42P08',
+  detail: 'text versus character varying',
+  hint: undefined,
+  position: '94',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_param.c',
+  line: '227',
+  routine: 'variable_coerce_param_hook',
+  query: 'INSERT INTO product_images (product_id, image_url, sort_order, is_primary)\n' +
+    '           SELECT $1, $2, $3, $4\n' +
+    '           WHERE NOT EXISTS (SELECT 1 FROM product_images WHERE product_id = $1 AND is_primary = true)',
+  params: [ 'p1', '/images/products/blessed_model.jpg', 0, true ],
+  queryOptions: undefined
+}

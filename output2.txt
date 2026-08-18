@@ -1,0 +1,32 @@
+error: relation "test_uuid" already exists
+    at pe.Ue (file:///app/applet/node_modules/@electric-sql/pglite/dist/chunk-2BOC2OMW.js:1:17959)
+    at pe.tt (file:///app/applet/node_modules/@electric-sql/pglite/dist/chunk-2BOC2OMW.js:1:15347)
+    at pe.parse (file:///app/applet/node_modules/@electric-sql/pglite/dist/chunk-2BOC2OMW.js:1:14021)
+    at O.qe (file:///app/applet/node_modules/@electric-sql/pglite/dist/index.js:5:1762)
+    at file:///app/applet/node_modules/@electric-sql/pglite/dist/index.js:5:1155
+    at wasm://wasm/0267b22e:wasm-function[10926]:0x5a5a7a
+    at wasm://wasm/0267b22e:wasm-function[3584]:0x27ea68
+    at wasm://wasm/0267b22e:wasm-function[3626]:0x28694e
+    at wasm://wasm/0267b22e:wasm-function[3636]:0x286baa
+    at wasm://wasm/0267b22e:wasm-function[9913]:0x54fcc7 {
+  length: 103,
+  severity: 'ERROR',
+  code: '42P07',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'heap.c',
+  line: '1179',
+  routine: 'heap_create_with_catalog',
+  query: 'CREATE TABLE test_uuid (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name TEXT);',
+  params: [],
+  queryOptions: undefined
+}

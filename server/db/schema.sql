@@ -1,0 +1,190 @@
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  full_name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  phone VARCHAR(50),
+  password_hash VARCHAR(255) NOT NULL,
+  salt VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL DEFAULT 'CUSTOMER',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+  id VARCHAR(255) PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  expires_at BIGINT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  token VARCHAR(255) PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  expires_at BIGINT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+  id VARCHAR(255) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  description TEXT,
+  image VARCHAR(255),
+  status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS collections (
+  id VARCHAR(255) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  description TEXT,
+  cover_image VARCHAR(255),
+  status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id VARCHAR(255) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  sku VARCHAR(255) UNIQUE,
+  description TEXT,
+  category_id VARCHAR(255) REFERENCES categories(id) ON DELETE SET NULL,
+  collection_id VARCHAR(255) REFERENCES collections(id) ON DELETE SET NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  compare_at_price DECIMAL(10, 2),
+  stock INTEGER NOT NULL DEFAULT 0,
+  status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',
+  featured BOOLEAN DEFAULT FALSE,
+  new_arrival BOOLEAN DEFAULT FALSE,
+  bestseller BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS product_variants (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id VARCHAR(255) NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  size VARCHAR(50),
+  color VARCHAR(50),
+  sku VARCHAR(255) UNIQUE,
+  stock INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS product_images (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id VARCHAR(255) NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  image_url VARCHAR(255) NOT NULL,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  is_primary BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS coupons (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  code VARCHAR(100) UNIQUE NOT NULL,
+  type VARCHAR(50) NOT NULL,
+  value DECIMAL(10, 2) NOT NULL,
+  min_order DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  max_discount DECIMAL(10, 2),
+  usage_limit INTEGER,
+  usage_count INTEGER NOT NULL DEFAULT 0,
+  active BOOLEAN DEFAULT TRUE,
+  start_date TIMESTAMP WITH TIME ZONE,
+  end_date TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id VARCHAR(255) PRIMARY KEY,
+  order_reference VARCHAR(255) UNIQUE NOT NULL,
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  subtotal DECIMAL(10, 2) NOT NULL,
+  discount DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  shipping DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  tax DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  total DECIMAL(10, 2) NOT NULL,
+  order_status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+  payment_status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id VARCHAR(255) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  product_id VARCHAR(255),
+  product_name VARCHAR(255) NOT NULL,
+  product_sku VARCHAR(255),
+  selected_size VARCHAR(50),
+  selected_color VARCHAR(50),
+  quantity INTEGER NOT NULL,
+  unit_price DECIMAL(10, 2) NOT NULL,
+  image_url VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS order_addresses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id VARCHAR(255) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  type VARCHAR(50) NOT NULL, -- 'SHIPPING' or 'BILLING'
+  full_name VARCHAR(255) NOT NULL,
+  phone VARCHAR(50),
+  address_line VARCHAR(255) NOT NULL,
+  city VARCHAR(100) NOT NULL,
+  state VARCHAR(100) NOT NULL,
+  pincode VARCHAR(50) NOT NULL,
+  country VARCHAR(100) NOT NULL DEFAULT 'IN'
+);
+
+CREATE TABLE IF NOT EXISTS order_status_events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id VARCHAR(255) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  previous_status VARCHAR(50),
+  new_status VARCHAR(50) NOT NULL,
+  changed_by VARCHAR(255),
+  timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS store_settings (
+  id VARCHAR(50) PRIMARY KEY DEFAULT 'global',
+  store_name VARCHAR(255),
+  support_email VARCHAR(255),
+  support_phone VARCHAR(50),
+  legal_name VARCHAR(255),
+  business_address TEXT,
+  country VARCHAR(100),
+  gstin VARCHAR(100),
+  business_hours VARCHAR(255),
+  default_shipping_fee DECIMAL(10, 2) DEFAULT 0,
+  free_shipping_threshold DECIMAL(10, 2) DEFAULT 0,
+  processing_time VARCHAR(255),
+  delivery_estimate VARCHAR(255),
+  cod_enabled BOOLEAN DEFAULT FALSE,
+  announcement_text VARCHAR(255),
+  privacy_policy TEXT,
+  terms TEXT,
+  shipping_policy TEXT,
+  returns_policy TEXT,
+  cancellation_policy TEXT,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS admin_activity_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  action VARCHAR(255) NOT NULL,
+  entity VARCHAR(255),
+  entity_id VARCHAR(255),
+  timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
+CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku);
+CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_orders_order_status ON orders(order_status);
+CREATE INDEX IF NOT EXISTS idx_coupons_code ON coupons(code);
+CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
+
